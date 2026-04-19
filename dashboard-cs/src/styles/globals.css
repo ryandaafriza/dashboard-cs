@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Core Palette */
+  --bg-base: #0f1117;
+  --bg-surface: #161b26;
+  --bg-card: #1c2333;
+  --bg-card-hover: #1f2940;
+  --bg-elevated: #242d42;
+
+  /* Borders */
+  --border-subtle: rgba(255,255,255,0.05);
+  --border-default: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+
+  /* Text */
+  --text-primary: #e8edf5;
+  --text-secondary: #8a95a8;
+  --text-muted: #4d5a70;
+  --text-inverse: #0f1117;
+
+  /* Status Colors */
+  --color-success: #22c55e;
+  --color-success-bg: rgba(34,197,94,0.08);
+  --color-success-border: rgba(34,197,94,0.2);
+
+  --color-danger: #ef4444;
+  --color-danger-bg: rgba(239,68,68,0.08);
+  --color-danger-border: rgba(239,68,68,0.2);
+
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245,158,11,0.08);
+  --color-warning-border: rgba(245,158,11,0.2);
+
+  --color-info: #3b82f6;
+  --color-info-bg: rgba(59,130,246,0.08);
+  --color-info-border: rgba(59,130,246,0.2);
+
+  /* Accent */
+  --accent-primary: #3b82f6;
+  --accent-teal: #14b8a6;
+  --accent-violet: #8b5cf6;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
+  --shadow-elevated: 0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  /* Font */
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
