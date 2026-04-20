@@ -24,7 +24,7 @@ Sistem monitoring dan manajemen tiket Customer Service — dibangun dengan **Go*
 
 ---
 
-## Menjalankan Proyek
+## Menjalankan
 
 ### Backend
 
