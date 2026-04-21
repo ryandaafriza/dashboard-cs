@@ -40,17 +40,26 @@ func NewRouter(
 ) http.Handler {
 	mux := http.NewServeMux()
 
+	// Health
 	mux.HandleFunc("/health", dh.HealthCheck)
-	mux.HandleFunc("/api/v1/dashboard", dh.GetDashboard)
+
+	// Realtime — tanpa filter tanggal
 	mux.HandleFunc("/api/v1/realtime", dh.GetRealtime)
 
+	// Dashboard — dengan filter tanggal
+	// PENTING: /api/v1/dashboard/channels harus didaftarkan SEBELUM /api/v1/dashboard
+	// supaya tidak tertangkap oleh handler dashboard utama
+	mux.HandleFunc("/api/v1/dashboard/channels", dh.GetChannelDetail)
+	mux.HandleFunc("/api/v1/dashboard", dh.GetDashboard)
+
+	// Import & Export
 	mux.HandleFunc("/api/v1/import", ih.ImportExcel)
 	mux.HandleFunc("/api/v1/export", eh.ExportExcel)
 
+	// Incidents
 	mux.HandleFunc("/api/v1/incidents", inch.Create)
 	mux.HandleFunc("/api/v1/incidents/active", inch.GetActive)
 	mux.HandleFunc("/api/v1/incidents/history", inch.GetHistory)
-
 	mux.HandleFunc("/api/v1/incidents/", func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/api/v1/incidents/")
 		if strings.HasSuffix(path, "/resolve") && r.Method == http.MethodPatch {

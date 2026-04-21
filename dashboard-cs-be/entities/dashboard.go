@@ -5,27 +5,26 @@ package entities
 // ─────────────────────────────────────────────────────────────────────────────
 
 type Customer struct {
-	ID        string  `db:"id"`
-	Name      string  `db:"name"`
-	Phone     string  `db:"phone"`
-	Email     *string `db:"email"`
+	ID    string  `db:"id"`
+	Name  string  `db:"name"`
+	Phone string  `db:"phone"`
+	Email *string `db:"email"`
 }
 
 type Ticket struct {
-	ID         string  `db:"id"`
-	CustomerID string  `db:"customer_id"`
-	Channel    string  `db:"channel"`
-	Priority   string  `db:"priority"`
-	Status     string  `db:"status"`
-	Topic      string  `db:"topic"`
-	IsFCR      bool    `db:"is_fcr"`
+	ID         string `db:"id"`
+	CustomerID string `db:"customer_id"`
+	Channel    string `db:"channel"`
+	Priority   string `db:"priority"`
+	Status     string `db:"status"`
+	Topic      string `db:"topic"`
 }
 
 type SLARule struct {
-	ID                  int    `db:"id"`
-	Priority            string `db:"priority"`
-	MaxDurationMinutes  int    `db:"max_duration_minutes"`
-	IsActive            bool   `db:"is_active"`
+	ID                 int    `db:"id"`
+	Priority           string `db:"priority"`
+	MaxDurationMinutes int    `db:"max_duration_minutes"`
+	IsActive           bool   `db:"is_active"`
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,6 +37,7 @@ type SummaryRow struct {
 	Closed         int     `db:"closed_count"`
 	CSATPercentage float64 `db:"csat_percentage"`
 	CSATScore      float64 `db:"csat_score"`
+	Unassigned     int     `db:"unassigned_count"`
 }
 
 type TrendRow struct {
@@ -69,31 +69,42 @@ type ChannelSLARow struct {
 }
 
 type TopCorporateRow struct {
-	Channel       string  `db:"channel"`
 	CompanyName   string  `db:"company_name"`
 	Interactions  int     `db:"interactions"`
 	Tickets       int     `db:"ticket_count"`
 	FCRPercentage float64 `db:"fcr_percentage"`
+	Total         int     `db:"total_count"` // untuk pagination
 }
 
 type TopKIPRow struct {
-	Channel       string  `db:"channel"`
 	Topic         string  `db:"topic"`
 	Interactions  int     `db:"interactions"`
 	Tickets       int     `db:"ticket_count"`
 	FCRPercentage float64 `db:"fcr_percentage"`
+	Total         int     `db:"total_count"` // untuk pagination
 }
 
 type RealtimeRow struct {
 	SLATodayPercentage float64 `db:"sla_today_percentage"`
 	SLATodayDelta      float64 `db:"sla_today_delta"`
 	CreatedTodayTotal  int     `db:"created_today_total"`
-	OpenTickets        int     `db:"open_tickets"`
-	Unassigned         int     `db:"unassigned"`
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// API Response structs  (usecase layer builds these, handler serialises them)
+// Filter structs
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ChannelDetailFilter adalah parameter untuk GET /api/v1/dashboard/channels
+type ChannelDetailFilter struct {
+	From    string
+	To      string
+	Channel string // wajib: email | whatsapp | social_media | live_chat | call_center
+	Page    int    // default: 1
+	Limit   int    // default: 10
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// API Response structs
 // ─────────────────────────────────────────────────────────────────────────────
 
 type Response struct {
@@ -107,9 +118,7 @@ type Response struct {
 type RealtimeResponse struct {
 	SLAToday        SLAToday `json:"sla_today"`
 	CreatedToday    Created  `json:"created_today"`
-	OpenTickets     int      `json:"open_tickets"`
-	Unassigned      int      `json:"unassigned"`
-	IncidentsActive int      `json:"incidents_active"` // future: query from incidents table
+	IncidentsActive int      `json:"incidents_active"`
 }
 
 type SLAToday struct {
@@ -125,12 +134,12 @@ type Created struct {
 // --- GET /api/v1/dashboard ---
 
 type DashboardResponse struct {
-	Filter          FilterMeta       `json:"filter"`
-	Summary         SummaryAggregate `json:"summary"`
+	Filter          FilterMeta        `json:"filter"`
+	Summary         SummaryAggregate  `json:"summary"`
 	DailyTrend      []DailyTrendPoint `json:"daily_trend"`
 	TicketsPerHour  []TicketHourPoint `json:"tickets_per_hour"`
-	PrioritySummary PrioritySummary  `json:"priority_summary"`
-	Channels        []ChannelDetail  `json:"channels"`
+	PrioritySummary PrioritySummary   `json:"priority_summary"`
+	Channels        []ChannelSummary  `json:"channels"` // hanya SLA, open, closed — tanpa nested detail
 }
 
 type FilterMeta struct {
@@ -144,6 +153,7 @@ type SummaryAggregate struct {
 	Closed         int     `json:"closed"`
 	CSATPercentage float64 `json:"csat_percentage"`
 	CSATScore      float64 `json:"csat_score"`
+	Unassigned     int     `json:"unassigned"`
 }
 
 type DailyTrendPoint struct {
@@ -167,13 +177,38 @@ type PrioritySummary struct {
 	Urgent     int `json:"urgent"`
 }
 
-type ChannelDetail struct {
-	Channel      string         `json:"channel"`
-	SLA          float64        `json:"sla"`
-	Open         int            `json:"open"`
-	Closed       int            `json:"closed"`
-	TopCorporate []TopCorporate `json:"top_corporate"`
-	TopKIP       []TopKIP       `json:"top_kip"`
+// ChannelSummary — ringkasan per channel di /dashboard (tanpa top_corporate & top_kip)
+type ChannelSummary struct {
+	Channel string  `json:"channel"`
+	SLA     float64 `json:"sla"`
+	Open    int     `json:"open"`
+	Closed  int     `json:"closed"`
+}
+
+// --- GET /api/v1/dashboard/channels ---
+
+// ChannelDetailResponse — response lengkap per channel dengan pagination
+type ChannelDetailResponse struct {
+	Filter       ChannelDetailFilter `json:"filter"`
+	TopCorporate PaginatedCorporate  `json:"top_corporate"`
+	TopKIP       PaginatedKIP        `json:"top_kip"`
+}
+
+type PaginatedCorporate struct {
+	Data       []TopCorporate `json:"data"`
+	Pagination Pagination     `json:"pagination"`
+}
+
+type PaginatedKIP struct {
+	Data       []TopKIP   `json:"data"`
+	Pagination Pagination `json:"pagination"`
+}
+
+type Pagination struct {
+	Page       int `json:"page"`
+	Limit      int `json:"limit"`
+	TotalItems int `json:"total_items"`
+	TotalPages int `json:"total_pages"`
 }
 
 type TopCorporate struct {

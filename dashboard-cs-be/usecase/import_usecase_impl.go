@@ -10,7 +10,7 @@ import (
 	"github.com/xuri/excelize/v2"
 
 	"dashboard-cs-be/entities"
-	"dashboard-cs-be/repository"
+	"dashboard-cs-be/repository/interfaces"
 )
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -50,7 +50,7 @@ var dateTimeFormats = []string{
 var expectedHeaders = []string{
 	"ticket_id", "created_at", "resolved_at", "channel", "priority",
 	"status", "customer_name", "customer_phone", "customer_email",
-	"customer_type", "topic", "agent_id", "is_fcr",
+	"customer_type", "topic", "agent_id",
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -58,11 +58,11 @@ var expectedHeaders = []string{
 // ─────────────────────────────────────────────────────────────────────────────
 
 type importUsecase struct {
-	repo repository.ImportRepository
+	repo interfaces.ImportRepository
 }
 
 // NewImportUsecase constructs the import usecase.
-func NewImportUsecase(repo repository.ImportRepository) ImportUsecase {
+func NewImportUsecase(repo interfaces.ImportRepository) ImportUsecase {
 	return &importUsecase{repo: repo}
 }
 
@@ -157,7 +157,7 @@ func buildHeaderMap(headerRow []string) (map[string]int, error) {
 
 	// Validasi kolom wajib
 	required := []string{"ticket_id", "created_at", "channel", "priority", "status",
-		"customer_name", "customer_phone", "topic", "is_fcr"}
+		"customer_name", "customer_phone", "topic"}
 	for _, col := range required {
 		if _, ok := m[col]; !ok {
 			return nil, fmt.Errorf("kolom wajib '%s' tidak ditemukan di header Excel", col)
@@ -263,9 +263,6 @@ func parseRow(row []string, hm map[string]int, rowNum int) (*entities.ImportRow,
 		return nil, rowErr("topic tidak boleh kosong", ticketID)
 	}
 
-	// ── is_fcr ─────────────────────────────────────────────────────────────
-	isFCR := parseBool(get("is_fcr"))
-
 	return &entities.ImportRow{
 		TicketID:      ticketID,
 		CreatedAt:     createdAt,
@@ -279,7 +276,6 @@ func parseRow(row []string, hm map[string]int, rowNum int) (*entities.ImportRow,
 		CustomerType:  customerType,
 		Topic:         topic,
 		AgentID:       get("agent_id"),
-		IsFCR:         isFCR,
 	}, nil
 }
 

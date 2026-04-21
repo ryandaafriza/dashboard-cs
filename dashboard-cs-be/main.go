@@ -10,7 +10,7 @@ import (
 
 	"dashboard-cs-be/config"
 	deliveryHTTP "dashboard-cs-be/delivery/http"
-	"dashboard-cs-be/repository"
+	repository "dashboard-cs-be/repository/mysql"
 	"dashboard-cs-be/usecase"
 )
 

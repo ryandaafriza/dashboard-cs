@@ -20,7 +20,6 @@ type ImportRow struct {
 	CustomerType string   // consumer / corporate
 	Topic        string
 	AgentID      string  // boleh kosong
-	IsFCR        bool
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

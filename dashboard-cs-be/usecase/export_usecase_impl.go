@@ -8,7 +8,7 @@ import (
 	"github.com/xuri/excelize/v2"
 
 	"dashboard-cs-be/entities"
-	"dashboard-cs-be/repository"
+	"dashboard-cs-be/repository/interfaces"
 )
 
 const (
@@ -25,10 +25,10 @@ const (
 )
 
 type exportUsecase struct {
-	repo repository.ExportRepository
+	repo interfaces.ExportRepository
 }
 
-func NewExportUsecase(repo repository.ExportRepository) ExportUsecase {
+func NewExportUsecase(repo interfaces.ExportRepository) ExportUsecase {
 	return &exportUsecase{repo: repo}
 }
 

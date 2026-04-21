@@ -8,7 +8,8 @@ import (
 	"time"
 
 	"dashboard-cs-be/entities"
-	"dashboard-cs-be/repository"
+	"dashboard-cs-be/repository/interfaces"
+	mysqlrepo "dashboard-cs-be/repository/mysql"
 )
 
 const incidentDateLayout = "2006-01-02 15:04:05"
@@ -18,13 +19,13 @@ var validSeverities = map[string]bool{
 }
 
 type incidentUsecase struct {
-	repo repository.IncidentRepository
+	repo interfaces.IncidentRepository
 	db   *sql.DB // dibutuhkan hanya untuk generate ID
 }
 
 // NewIncidentUsecase constructs the incident usecase.
 // db diperlukan semata untuk NextIncidentID — alternatifnya bisa dipindah ke repo.
-func NewIncidentUsecase(repo repository.IncidentRepository, db *sql.DB) IncidentUsecase {
+func NewIncidentUsecase(repo interfaces.IncidentRepository, db *sql.DB) IncidentUsecase {
 	return &incidentUsecase{repo: repo, db: db}
 }
 
@@ -55,7 +56,7 @@ func (uc *incidentUsecase) CreateIncident(req *entities.CreateIncidentRequest) (
 	}
 
 	// Generate ID
-	id, err := repository.NextIncidentID(uc.db)
+	id, err := mysqlrepo.NextIncidentID(uc.db)
 	if err != nil {
 		return nil, fmt.Errorf("generate incident ID: %w", err)
 	}
@@ -130,10 +131,10 @@ func (uc *incidentUsecase) ResolveIncident(id string) (*entities.IncidentRespons
 
 	resolved, err := uc.repo.Resolve(id)
 	if err != nil {
-		if errors.Is(err, repository.ErrIncidentNotFound) {
+		if errors.Is(err, mysqlrepo.ErrIncidentNotFound) {
 			return nil, fmt.Errorf("incident '%s' tidak ditemukan", id)
 		}
-		if errors.Is(err, repository.ErrIncidentAlreadyResolved) {
+		if errors.Is(err, mysqlrepo.ErrIncidentAlreadyResolved) {
 			return nil, fmt.Errorf("incident '%s' sudah diselesaikan sebelumnya", id)
 		}
 		return nil, fmt.Errorf("ResolveIncident: %w", err)
