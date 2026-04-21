@@ -1,10 +1,20 @@
 import React from 'react';
 import { formatNumber } from '../utils/formatUtils';
 
+const centerStyle = {
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+};
+
 /* ─────────────────────────────────────────
    Created Today Card
 ───────────────────────────────────────── */
 export function CreatedTodayCard({ value, delta }) {
+  const hasDelta   = delta !== 0 && delta !== null && delta !== undefined;
+  const isNegative = delta < 0;
+
   return (
     <div className="card stat-card animate-in">
       <div className="card__inner">
@@ -12,10 +22,14 @@ export function CreatedTodayCard({ value, delta }) {
           <span className="card-label">Created Today</span>
           <span className="card-icon card-icon--info">📋</span>
         </div>
-        <div className="stat-value">{formatNumber(value)}</div>
-        <div className="stat-meta stat-meta--positive">
-          <span>▲</span>
-          <span>+{formatNumber(delta)} vs last day</span>
+        <div style={centerStyle}>
+          <div className="stat-value">{formatNumber(value)}</div>
+          {hasDelta && (
+            <div className={`stat-meta ${isNegative ? 'stat-meta--negative' : 'stat-meta--positive'}`}>
+              <span>{isNegative ? '▼' : '▲'}</span>
+              <span>{isNegative ? '' : '+'}{formatNumber(delta)} vs last day</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -33,10 +47,12 @@ export function OpenTicketsCard({ value }) {
           <span className="card-label">Open Tickets</span>
           <span className="card-icon card-icon--warning">⏳</span>
         </div>
-        <div className="stat-value" style={{ color: 'var(--color-warning)' }}>
-          {formatNumber(value)}
+        <div style={centerStyle}>
+          <div className="stat-value" style={{ color: 'var(--color-warning)' }}>
+            {formatNumber(value)}
+          </div>
+          <div className="stat-meta">Active</div>
         </div>
-        <div className="stat-meta">Active &amp; pending</div>
       </div>
     </div>
   );
@@ -55,10 +71,12 @@ export function UnassignedCard({ value }) {
           <span className="card-label">Unassigned</span>
           <span className="card-icon card-icon--danger unassigned-blink">⚠</span>
         </div>
-        <div className="stat-value" style={{ color: 'var(--color-danger)' }}>
-          {hasValue ? value : '—'}
+        <div style={centerStyle}>
+          <div className="stat-value" style={{ color: 'var(--color-danger)' }}>
+            {hasValue ? value : '—'}
+          </div>
+          <div className="unassigned-label">Needs attention</div>
         </div>
-        <div className="unassigned-label">Needs attention</div>
       </div>
     </div>
   );
@@ -84,31 +102,17 @@ export function CSATCard({ percentage, score }) {
             display: 'flex',
             alignItems: 'center',
             gap: 'var(--space-3)',
-            marginTop: 'auto',
+            flex: 1,
+            justifyContent: 'center',
           }}
         >
           <div className="csat-ring-wrap">
             <svg width="72" height="72" viewBox="0 0 60 60">
-              {/* Track */}
+              <circle cx="30" cy="30" r="26" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5" />
               <circle
-                cx="30"
-                cy="30"
-                r="26"
-                fill="none"
-                stroke="rgba(255,255,255,0.06)"
-                strokeWidth="5"
-              />
-              {/* Fill */}
-              <circle
-                cx="30"
-                cy="30"
-                r="26"
-                fill="none"
-                stroke="#22c55e"
-                strokeWidth="5"
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                strokeDashoffset={offset}
+                cx="30" cy="30" r="26" fill="none"
+                stroke="#22c55e" strokeWidth="5" strokeLinecap="round"
+                strokeDasharray={circumference} strokeDashoffset={offset}
                 style={{ transition: 'stroke-dashoffset 1.2s ease' }}
               />
             </svg>

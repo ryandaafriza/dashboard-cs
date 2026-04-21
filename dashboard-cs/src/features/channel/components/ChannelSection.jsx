@@ -13,7 +13,7 @@ export function ChannelSection({ filter }) {
       <div className="section-label">Channel Performance</div>
       <div className="channel-section-grid">
         {channels.map((ch) => (
-          <ChannelCard key={ch.key} channel={ch} />
+          <ChannelCard key={ch.key} channel={ch} filter={filter} />
         ))}
       </div>
     </section>

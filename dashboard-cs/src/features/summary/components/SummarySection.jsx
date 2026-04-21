@@ -3,8 +3,8 @@ import { formatNumber } from '../../kpi/utils/formatUtils';
 
 export function SummarySection({ summary }) {
   const { total, open, closed } = summary;
-  const openPct = ((open / total) * 100).toFixed(1);
-  const closedPct = ((closed / total) * 100).toFixed(1);
+  const openPct   = total > 0 ? ((open   / total) * 100).toFixed(1) : '0.0';
+  const closedPct = total > 0 ? ((closed / total) * 100).toFixed(1) : '0.0';
 
   return (
     <section>
@@ -81,10 +81,10 @@ export function SummarySection({ summary }) {
                     {formatNumber(open)} ({openPct}%)
                   </span>
                 </div>
-                <div className="summary-bar-track">
+                <div className="summary-bar-track" style={{ overflow: 'visible' }}>
                   <div
                     className="summary-bar-fill summary-bar-fill--open"
-                    style={{ width: `${openPct}%` }}
+                    style={{ width: parseFloat(openPct) === 0 ? '4px' : `${openPct}%`, opacity: parseFloat(openPct) === 0 ? 0.35 : 1 }}
                   />
                 </div>
               </div>
@@ -110,10 +110,10 @@ export function SummarySection({ summary }) {
                     {formatNumber(closed)} ({closedPct}%)
                   </span>
                 </div>
-                <div className="summary-bar-track">
+                <div className="summary-bar-track" style={{ overflow: 'visible' }}>
                   <div
                     className="summary-bar-fill summary-bar-fill--closed"
-                    style={{ width: `${closedPct}%` }}
+                    style={{ width: parseFloat(closedPct) === 0 ? '4px' : `${closedPct}%`, opacity: parseFloat(closedPct) === 0 ? 0.35 : 1 }}
                   />
                 </div>
               </div>

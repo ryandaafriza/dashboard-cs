@@ -86,7 +86,6 @@ function mapRealtime(rt) {
     createdToday: rt.created_today?.total ?? 0,
     createdDelta: rt.created_today?.delta ?? 0,
     incidentsActive: rt.incidents_active ?? 0,
-    // open_tickets & unassigned sudah tidak ada di realtime
   };
 }
 

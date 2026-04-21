@@ -1,11 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import { ImportExcelButton } from './ImportExcelButton';
-import { ExportExcelButton } from './ExportExcelButton';
-import { SyncButton } from './SyncButton';
-import { Toast } from './Toast';
+import React, { useState, useCallback } from "react";
+import { ImportExcelButton } from "./ImportExcelButton";
+import { ExportExcelButton } from "./ExportExcelButton";
+import { SyncButton } from "./SyncButton";
+import { Toast } from "./Toast";
 
-export function Topbar({ lastSync, onRefresh, loading, filter, onFilterChange }) {
-  const [toast, setToast]       = useState(null);
+export function Topbar({
+  lastSync,
+  onRefresh,
+  loading,
+  filter,
+  onFilterChange,
+}) {
+  const [toast, setToast] = useState(null);
   const [needsSync, setNeedsSync] = useState(false);
 
   const clearToast = useCallback(() => setToast(null), []);
@@ -24,16 +30,19 @@ export function Topbar({ lastSync, onRefresh, loading, filter, onFilterChange })
 
   function handleImportResult(result) {
     setToast(result);
-    if (result.type === 'success') setNeedsSync(true);
+    if (result.type === "success") setNeedsSync(true);
   }
 
   async function handleSync() {
     try {
       await onRefresh();
       setNeedsSync(false);
-      setToast({ type: 'success', message: 'Data berhasil disinkronisasi.' });
+      setToast({ type: "success", message: "Data berhasil disinkronisasi." });
     } catch (err) {
-      setToast({ type: 'error', message: err.message ?? 'Gagal sinkronisasi data.' });
+      setToast({
+        type: "error",
+        message: err.message ?? "Gagal sinkronisasi data.",
+      });
     }
   }
 
@@ -48,7 +57,7 @@ export function Topbar({ lastSync, onRefresh, loading, filter, onFilterChange })
         <div className="topbar__right">
           <div className="sync-info">
             <div className="sync-dot" />
-            <span>Last Sync: {lastSync ?? '—'}</span>
+            <span>Last Sync: {lastSync ?? "—"}</span>
           </div>
 
           <div className="date-filter">
@@ -97,6 +106,7 @@ export function Topbar({ lastSync, onRefresh, loading, filter, onFilterChange })
           background: var(--bg-card, #fff);
           color: var(--text-primary, #333);
           cursor: pointer;
+          color-scheme: dark;
         }
         .date-filter__input:disabled { opacity: 0.5; cursor: not-allowed; }
         .date-filter__sep { color: var(--text-muted, #888); }

@@ -276,22 +276,33 @@ export function IncidentSection({ filter }) {
           </div>
         </div>
 
-        {/* ── Active incidents — tabel ── */}
-        {hasActive && (
-          <div className="inc-active-table-wrap">
-            <table className="inc-active-table">
-              <thead>
+        {/* ── Active incidents — tabel (selalu tampil) ── */}
+        <div className="inc-active-table-wrap">
+          <table className="inc-active-table">
+            <thead>
+              <tr>
+                <th>Judul</th>
+                <th>Severity</th>
+                <th>Mulai</th>
+                <th>Durasi</th>
+                <th>Dibuat oleh</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
                 <tr>
-                  <th>Judul</th>
-                  <th>Severity</th>
-                  <th>Mulai</th>
-                  <th>Durasi</th>
-                  <th>Dibuat oleh</th>
-                  <th>Aksi</th>
+                  <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px', fontSize: 13 }}>
+                    Memuat data…
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {active.map((inc) => {
+              ) : active.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px', fontSize: 13 }}>
+                    — Tidak ada incident aktif —
+                  </td>
+                </tr>
+              ) : active.map((inc) => {
                   const isResolving = resolvingId === inc.id;
                   return (
                     <tr key={inc.id}>
@@ -319,11 +330,10 @@ export function IncidentSection({ filter }) {
                       </td>
                     </tr>
                   );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+              })}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       {/* ── Toast ── */}
@@ -355,7 +365,7 @@ export function IncidentSection({ filter }) {
       <style>{`
         /* ── Section wrapper ── */
         .inc-section {
-          margin: 0 var(--space-6) var(--space-6);
+          margin: 0;
           display: flex;
           flex-direction: column;
           gap: var(--space-3);
